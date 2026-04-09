@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Regatta Entry Management System - PERDIKA</title>
+  <title>Regatta Entry Management System</title>
 
   <style>
     * {
@@ -406,6 +406,8 @@
         </div>
       </div>
 
+     
+
       <div class="separator"></div>
 
       <div class="notice-box">
@@ -443,24 +445,30 @@
   </div>
 
   <script>
-    const LOOKUP_URL = "https://script.google.com/macros/s/AKfycbxsoVuhig7l4owjiAt8LrF8USsKefVEuVo3ajS6oFYWJwPf2Hw4l06bsNQwkkeT0Ys3/exec";
+    // =========================================
+    // 1. ΒΑΣΙΚΕΣ ΡΥΘΜΙΣΕΙΣ ΕΦΑΡΜΟΓΗΣ
+    // =========================================
 
-    // ΝΕΑ ΦΟΡΜΑ ΠΕΡΔΙΚΑ
+    const LOOKUP_URL = "https://script.google.com/macros/s/AKfycbxsoVuhig7l4owjiAt8LrF8USsKefVEuVo3ajS6oFYWJwPf2Hw4l06bsNQwkkeT0Ys3/exec";
     const JOTFORM_BASE_URL = "https://form.jotform.com/260978417846372";
 
     const EVENT_LOGO = "https://github.com/jsamartzis-png/logos/blob/main/logo_EntryFlow_removebg-preview.png?raw=true";
     const EVENT_BACKGROUND = "background.jpg";
 
     const EVENT_NOTES = [
-      "Με τη χρήση αυτής της εφαρμογής, μπορείτε εύκολα να υποβάλετε τα απαραίτητα έγγραφα και να ολοκληρώσετε την πληρωμή του παραβόλου (όλα σε ένα σημείο).",
-      'Διαβάστε την <a href="https://docs.google.com/document/d/1_ThpUPcy-w1-D5hScVCcKZ2csmjs6_m-mIkEYNY9c5I/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Πολιτική Απορρήτου</a> και τους <a href="https://docs.google.com/document/d/1Btn0eMNSZotVyH3n7RETC3ur8lZ4V_2I/edit?usp=sharing&ouid=115039995651229449950&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Όρους Χρήσης</a>.'
-    ];
+  "Με τη χρήση αυτής της εφαρμογής, μπορείτε εύκολα να υποβάλετε τα απαραίτητα έγγραφα και να ολοκληρώσετε την πληρωμή του παραβόλου (όλα σε ένα σημείο).",
+  'Διαβάστε την <a href="https://docs.google.com/document/d/1_ThpUPcy-w1-D5hScVCcKZ2csmjs6_m-mIkEYNY9c5I/edit?usp=sharing" target="_blank" rel="noopener noreferrer">Πολιτική Απορρήτου</a> και τους <a href="https://docs.google.com/document/d/1Btn0eMNSZotVyH3n7RETC3ur8lZ4V_2I/edit?usp=sharing&ouid=115039995651229449950&rtpof=true&sd=true" target="_blank" rel="noopener noreferrer">Όρους Χρήσης</a>.'
+];
 
     const NOTICE_YEAR_TEXT =
       "Για να συνεχίσετε θα πρέπει να έχετε πιστοποιητικό της Εθνικής Αρχής για το έτος 2026.";
 
     const NOTICE_INFO_TEXT =
       "Για πληροφορίες: ΓΡΑΜΜΑΤΕΙΑ ΑΓΩΝΑ ΤΗΛ.: 210 4101 113";
+
+    // =========================================
+    // 2. UNIQUE NAMES ΤΗΣ JOTFORM
+    // =========================================
 
     const fieldNames = {
       yacht_name: "age",
@@ -555,42 +563,44 @@
       lastFoundData = null;
     }
 
-    function formatForJotformNumber(v) {
-      if (v === null || typeof v === "undefined" || v === "") return "";
+    
+function formatForJotformNumber(v) {
+  if (v === null || typeof v === "undefined" || v === "") return "";
 
-      let str = String(v).trim();
-      str = str.replace(",", ".");
+  let str = String(v).trim();
 
-      let num = parseFloat(str);
+  // καθάρισε περίεργες τιμές
+  str = str.replace(",", ".");
 
-      if (isNaN(num)) return "";
+  let num = parseFloat(str);
 
-      return num.toFixed(1).replace(".", ",");
-    }
+  if (isNaN(num)) return "";
 
-    function buildPrefillUrl(data) {
-      const params = new URLSearchParams();
+  return num.toFixed(1).replace(".", ",");
+}
+function buildPrefillUrl(data) {
+  const params = new URLSearchParams();
 
-      params.set(fieldNames.yacht_name, data.yacht_name || "");
-      params.set(fieldNames.sail_letters, data.sail_letters || "");
-      params.set(fieldNames.sail_number, data.sail_number || "");
-      params.set(fieldNames.yacht_type, data.yacht_type || "");
-      params.set(fieldNames.club, data.club || "");
+  params.set(fieldNames.yacht_name, data.yacht_name || "");
+  params.set(fieldNames.sail_letters, data.sail_letters || "");
+  params.set(fieldNames.sail_number, data.sail_number || "");
+  params.set(fieldNames.yacht_type, data.yacht_type || "");
+  params.set(fieldNames.club, data.club || "");
 
-      params.set(fieldNames.aph, formatForJotformNumber(data.aph_initial));
-      params.set(fieldNames.cert_date, data.certdate_last || "");
-      params.set(fieldNames.cert_type, data.initial_category || "");
-      params.set(fieldNames.saronic_cat, formatForJotformNumber(data.gph));
-      params.set(fieldNames.aph_club, formatForJotformNumber(data.aph_club));
-      params.set(fieldNames.aph_intl, formatForJotformNumber(data.aph_intl));
-      params.set(fieldNames.aph_ns, formatForJotformNumber(data.aph_ns));
-      params.set(fieldNames.aph_dh, formatForJotformNumber(data.aph_dh));
-      params.set(fieldNames.last_certificate, data.certdate_last || "");
-      params.set(fieldNames.special_cat, data.special_category || "");
-      params.set(fieldNames.aph_initial, formatForJotformNumber(data.aph_initial));
+  params.set(fieldNames.aph, formatForJotformNumber(data.aph_initial));
+  params.set(fieldNames.cert_date, data.certdate_last || "");
+  params.set(fieldNames.cert_type, data.initial_category || "");
+  params.set(fieldNames.saronic_cat, formatForJotformNumber(data.gph));
+  params.set(fieldNames.aph_club, formatForJotformNumber(data.aph_club));
+  params.set(fieldNames.aph_intl, formatForJotformNumber(data.aph_intl));
+  params.set(fieldNames.aph_ns, formatForJotformNumber(data.aph_ns));
+  params.set(fieldNames.aph_dh, formatForJotformNumber(data.aph_dh));
+  params.set(fieldNames.last_certificate, data.certdate_last || "");
+  params.set(fieldNames.special_cat, data.special_category || "");
+  params.set(fieldNames.aph_initial, formatForJotformNumber(data.aph_initial));
 
-      return JOTFORM_BASE_URL + "?" + params.toString();
-    }
+  return JOTFORM_BASE_URL + "?" + params.toString();
+}
 
     async function searchBoat() {
       const sailNumber = sailInput.value.trim();
